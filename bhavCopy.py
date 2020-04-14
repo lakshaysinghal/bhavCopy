@@ -8,12 +8,13 @@ import sys
 def bhavcopy():
     url_prefix = "https://www1.nseindia.com/content/historical/EQUITIES/" #2020/APR/cm10APR2020"
     url_suffix = "bhav.csv.zip"
-    cnt = 0
-    while True:
-        dt = datetime.datetime.now() - datetime.timedelta(days=cnt)
+    lookup_days = int(input("Number of lookup days:"))
+    count = 0
+    while(count < lookup_days):
+        dt = datetime.datetime.now() - datetime.timedelta(days=count)
+        print("Fetching data for date:", dt)
         value = str(dt.year) + "/" + calendar.month_abbr[dt.month].upper() + "/cm" + f"{dt:%d}" + calendar.month_abbr[dt.month].upper() + str(dt.year)
         url = url_prefix + value + url_suffix
-        #print(url)
         resp = requests.get(url)
         if resp.status_code == 200:
             zip_file = ZipFile(BytesIO(resp.content))
@@ -22,32 +23,31 @@ def bhavcopy():
 
             field = data.pop(0)
             data.pop(-1)
-            cnt_5p =  cnt_5n = cnt_0p = cnt_0n = 0 
+            number_of_stocks_advancing_5p =  number_of_stocks_declining_5p = number_of_positive_stocks = number_of_negative_stocks = 0 
             for row in data:
-                a = float(row[5])
-                b = float(row[7])
-                row[-1] = 100*(a-b)/b
+                close = float(row[5])
+                prev_close = float(row[7])
+                row[-1] = 100*(close-prev_close)/prev_close
                 if row[-1] > 0:
-                    cnt_0p+=1
+                    number_of_positive_stocks+=1
                 else:
-                    cnt_0n+=1
+                    number_of_negative_stocks+=1
 
                 if row[-1] > 5:
-                    cnt_5p+=1
+                    number_of_stocks_advancing_5p+=1
                 if row[-1] < 5:
-                    cnt_5n+=1
-
-            print()                    
-            print("Number of Stocks which advanced more than 5% on NSE today : ",cnt_5p)
-            print("Number of Stocks which declined more than 5% on NSE today : ",cnt_5n)
-            bbr = cnt_5p/cnt_5n if cnt_5p > cnt_5n else -1*(cnt_5n/cnt_5p)
-            print("Bull/Bear ratio                                           : ",bbr)
-            adr = cnt_0p/cnt_0n if cnt_0p > cnt_0n else -1*(cnt_0n/cnt_0p)
-            print("Advance/Decline ratio                                     : ",adr)
-            break
+                    number_of_stocks_declining_5p+=1
+                    
+            print("Number of Stocks which advanced more than 5% on NSE today : ",number_of_stocks_advancing_5p)
+            print("Number of Stocks which declined more than 5% on NSE today : ",number_of_stocks_declining_5p)
+            bull_bear_ratio = number_of_stocks_advancing_5p/number_of_stocks_declining_5p if number_of_stocks_advancing_5p > number_of_stocks_declining_5p else -1*(number_of_stocks_declining_5p/number_of_stocks_advancing_5p)
+            print("Bull/Bear ratio                                           : ",bull_bear_ratio)
+            advance_decline_ratio = number_of_positive_stocks/number_of_negative_stocks if number_of_positive_stocks > number_of_negative_stocks else -1*(number_of_negative_stocks/number_of_positive_stocks)
+            print("Advance/Decline ratio                                     : ",advance_decline_ratio)
+            count+=1
         else:
             print("Data not available for ",dt)
-            cnt+=1
+            count+=1
 
 if __name__ == "__main__":
     bhavcopy()
