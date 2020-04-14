@@ -48,7 +48,7 @@ def bhavcopy():
 
                 if row[-1] > 5:
                     number_of_stocks_advancing_5p+=1
-                if row[-1] < 5:
+                if row[-1] < -5:
                     number_of_stocks_declining_5p+=1
                     
             print("Number of Stocks which advanced more than 5% on NSE today : ",number_of_stocks_advancing_5p)
