@@ -43,7 +43,7 @@ def bhavcopy():
                 row[-1] = 100*(close-prev_close)/prev_close
                 if row[-1] > 0:
                     number_of_positive_stocks+=1
-                else:
+                elif row[-1] < 0:
                     number_of_negative_stocks+=1
 
                 if row[-1] > 5:
@@ -53,9 +53,9 @@ def bhavcopy():
                     
             print("Number of Stocks which advanced more than 5% on NSE today : ",number_of_stocks_advancing_5p)
             print("Number of Stocks which declined more than 5% on NSE today : ",number_of_stocks_declining_5p)
-            bull_bear_ratio = number_of_stocks_advancing_5p/number_of_stocks_declining_5p if number_of_stocks_advancing_5p > number_of_stocks_declining_5p else -1*(number_of_stocks_declining_5p/number_of_stocks_advancing_5p)
+            bull_bear_ratio = round( number_of_stocks_advancing_5p/number_of_stocks_declining_5p if number_of_stocks_advancing_5p > number_of_stocks_declining_5p else -1*(number_of_stocks_declining_5p/number_of_stocks_advancing_5p),2)
             print("Bull/Bear ratio                                           : ",bull_bear_ratio)
-            advance_decline_ratio = number_of_positive_stocks/number_of_negative_stocks if number_of_positive_stocks > number_of_negative_stocks else -1*(number_of_negative_stocks/number_of_positive_stocks)
+            advance_decline_ratio = round(number_of_positive_stocks/number_of_negative_stocks if number_of_positive_stocks > number_of_negative_stocks else -1*(number_of_negative_stocks/number_of_positive_stocks),2)
             print("Advance/Decline ratio                                     : ",advance_decline_ratio)
 
             list_number_of_stocks_advancing_5p.append(number_of_stocks_advancing_5p)
