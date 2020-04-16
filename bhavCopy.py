@@ -1,6 +1,7 @@
 #!/usr/bin/python3.6
 import requests
 import datetime
+import math
 import calendar
 from zipfile import ZipFile
 from io import BytesIO
@@ -9,6 +10,7 @@ import random
 from time import sleep
 import matplotlib.pyplot as plt
 import matplotlib 
+import matplotlib.dates as mdates
 
 
 list_number_of_stocks_advancing_5p = []
@@ -16,11 +18,11 @@ list_number_of_stocks_declining_5p = []
 list_bull_bear_ratio = []
 list_advance_decline_ratio = []
 list_dates = []
+lookup_days = int(input("Number of lookup days:"))
 
 def bhavcopy():
     url_prefix = "https://www1.nseindia.com/content/historical/EQUITIES/" #2020/APR/cm10APR2020"
     url_suffix = "bhav.csv.zip"
-    lookup_days = int(input("Number of lookup days:"))
     count = 0
     while(count < lookup_days):
         dt = datetime.datetime.now() - datetime.timedelta(days=count)
@@ -82,24 +84,17 @@ def visualize():
     dates = matplotlib.dates.date2num(list_dates)
     print(dates)
     
-    plt.subplot(2,1,1)
-    plt.plot(dates,list_number_of_stocks_advancing_5p, label = "Number of Stocks which advanced more than 5% on NSE today") 
-    plt.plot(dates,list_number_of_stocks_declining_5p, label = "Number of Stocks which declined more than 5% on NSE today") 
+    plt.xlabel('Dates')
+    plt.ylabel('Number of stocks') 
+    plt.title('NSE Market Breadth')
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    plot_interval = math.ceil(lookup_days/5)
+    plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=plot_interval))
+    plt.gcf().autofmt_xdate()
+    plt.plot(dates,list_number_of_stocks_advancing_5p, label = "5% Advancing") 
+    plt.plot(dates,list_number_of_stocks_declining_5p, label = "5% Declining")
+    plt.legend()
     
-    plt.subplot(2,1,2)
-    plt.plot(dates,list_bull_bear_ratio, label = "Bull/Bear ratio") 
-    plt.plot(dates,list_advance_decline_ratio, label = "Advance/Decline ratio") 
-
-    # naming the x axis 
-    plt.xlabel('x - axis') 
-    # naming the y axis 
-    plt.ylabel('y - axis') 
-    # giving a title to my graph 
-    plt.title('NSE Market breadth!') 
-
-    # show a legend on the plot 
-    plt.legend() 
-
     # function to show the plot 
     plt.savefig("plot.png") 
 
