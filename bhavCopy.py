@@ -20,16 +20,27 @@ list_advance_decline_ratio = []
 list_dates = []
 lookup_days = int(input("Number of lookup days:"))
 
+
 def bhavcopy():
     url_prefix = "https://www1.nseindia.com/content/historical/EQUITIES/" #2020/APR/cm10APR2020"
     url_suffix = "bhav.csv.zip"
+    header = {
+    'Accept-Encoding': 'gzip, deflate, sdch, br',
+    'Accept-Language': 'fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4',
+    'Host': 'www1.nseindia.com',
+    'Referer': 'https://www1.nseindia.com',
+    'User-Agent': 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/53.0.2785.143 Chrome/53.0.2785.143 Safari/537.36',
+    'X-Requested-With': 'XMLHttpRequest'
+    }
     count = 0
     while(count < lookup_days):
         dt = datetime.datetime.now() - datetime.timedelta(days=count)
         print("Fetching data for date:", dt)
         value = str(dt.year) + "/" + calendar.month_abbr[dt.month].upper() + "/cm" + f"{dt:%d}" + calendar.month_abbr[dt.month].upper() + str(dt.year)
         url = url_prefix + value + url_suffix
-        resp = requests.get(url)
+        resp = requests.get(url, headers=header)
+        print(resp)
+        print(resp.status_code)
         if resp.status_code == 200:
             print("Data available for ",dt)
             zip_file = ZipFile(BytesIO(resp.content))
