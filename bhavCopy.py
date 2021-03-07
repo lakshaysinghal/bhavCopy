@@ -39,8 +39,6 @@ def bhavcopy():
         value = str(dt.year) + "/" + calendar.month_abbr[dt.month].upper() + "/cm" + f"{dt:%d}" + calendar.month_abbr[dt.month].upper() + str(dt.year)
         url = url_prefix + value + url_suffix
         resp = requests.get(url, headers=header)
-        print(resp)
-        print(resp.status_code)
         if resp.status_code == 200:
             print("Data available for ",dt)
             zip_file = ZipFile(BytesIO(resp.content))
