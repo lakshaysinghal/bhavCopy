@@ -51,7 +51,7 @@ def bhavcopy():
             number_of_stocks_advancing_percentage =  number_of_stocks_declining_percentage = number_of_positive_stocks = number_of_negative_stocks = 0 
             for row in data:
                 close = float(row[5])
-                if close < 30 or row[1] != 'EQ': 
+                if close < 20 or row[1] != 'EQ': 
                     continue
                 prev_close = float(row[7])
                 row[-1] = 100*(close-prev_close)/prev_close
