@@ -13,12 +13,13 @@ import matplotlib
 import matplotlib.dates as mdates
 
 
-list_number_of_stocks_advancing_5p = []
-list_number_of_stocks_declining_5p = []
+list_number_of_stocks_advancing_percentage = []
+list_number_of_stocks_declining_percentage = []
 list_bull_bear_ratio = []
 list_advance_decline_ratio = []
 list_dates = []
 lookup_days = int(input("Number of lookup days:"))
+percentage = float(input("% Adavancing and Declining stocks:"))
 
 
 def bhavcopy():
@@ -47,9 +48,11 @@ def bhavcopy():
 
             field = data.pop(0)
             data.pop(-1)
-            number_of_stocks_advancing_5p =  number_of_stocks_declining_5p = number_of_positive_stocks = number_of_negative_stocks = 0 
+            number_of_stocks_advancing_percentage =  number_of_stocks_declining_percentage = number_of_positive_stocks = number_of_negative_stocks = 0 
             for row in data:
                 close = float(row[5])
+                if close < 30 or row[1] != 'EQ': 
+                    continue
                 prev_close = float(row[7])
                 row[-1] = 100*(close-prev_close)/prev_close
                 if row[-1] > 0:
@@ -57,20 +60,20 @@ def bhavcopy():
                 elif row[-1] < 0:
                     number_of_negative_stocks+=1
 
-                if row[-1] > 5:
-                    number_of_stocks_advancing_5p+=1
-                if row[-1] < -5:
-                    number_of_stocks_declining_5p+=1
+                if row[-1] > percentage:
+                    number_of_stocks_advancing_percentage+=1
+                if row[-1] < -percentage:
+                    number_of_stocks_declining_percentage+=1
                     
-            print("Number of Stocks which advanced more than 5% on NSE today : ",number_of_stocks_advancing_5p)
-            print("Number of Stocks which declined more than 5% on NSE today : ",number_of_stocks_declining_5p)
-            bull_bear_ratio = round( number_of_stocks_advancing_5p/number_of_stocks_declining_5p if number_of_stocks_advancing_5p > number_of_stocks_declining_5p else -1*(number_of_stocks_declining_5p/number_of_stocks_advancing_5p),2)
+            print("Number of Stocks which advanced more than {} on NSE today : ".format(percentage),number_of_stocks_advancing_percentage)
+            print("Number of Stocks which declined more than {} on NSE today : ".format(percentage),number_of_stocks_declining_percentage)
+            bull_bear_ratio = round( number_of_stocks_advancing_percentage/number_of_stocks_declining_percentage if number_of_stocks_advancing_percentage > number_of_stocks_declining_percentage else -1*(number_of_stocks_declining_percentage/number_of_stocks_advancing_percentage),2)
             print("Bull/Bear ratio                                           : ",bull_bear_ratio)
             advance_decline_ratio = round(number_of_positive_stocks/number_of_negative_stocks if number_of_positive_stocks > number_of_negative_stocks else -1*(number_of_negative_stocks/number_of_positive_stocks),2)
             print("Advance/Decline ratio                                     : ",advance_decline_ratio)
 
-            list_number_of_stocks_advancing_5p.append(number_of_stocks_advancing_5p)
-            list_number_of_stocks_declining_5p.append(number_of_stocks_declining_5p)
+            list_number_of_stocks_advancing_percentage.append(number_of_stocks_advancing_percentage)
+            list_number_of_stocks_declining_percentage.append(number_of_stocks_declining_percentage)
             list_bull_bear_ratio.append(bull_bear_ratio)
             list_advance_decline_ratio.append(advance_decline_ratio)
             list_dates.append(dt)
@@ -85,8 +88,8 @@ def bhavcopy():
 def visualize():
     print("Cumilative Data:")
     print("Dates                                                     : ",list_dates)
-    print("Number of Stocks which advanced more than 5% on NSE today : ",list_number_of_stocks_advancing_5p)
-    print("Number of Stocks which declined more than 5% on NSE today : ",list_number_of_stocks_declining_5p)
+    print("Number of Stocks which advanced more than {} on NSE today : ".format(percentage),list_number_of_stocks_advancing_percentage)
+    print("Number of Stocks which declined more than {} on NSE today : ".format(percentage),list_number_of_stocks_declining_percentage)
     print("Bull/Bear ratio                                           : ",list_bull_bear_ratio)
     print("Advance/Decline ratio                                     : ",list_advance_decline_ratio)
 
@@ -100,8 +103,8 @@ def visualize():
     plot_interval = math.ceil(lookup_days/5)
     plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=plot_interval))
     plt.gcf().autofmt_xdate()
-    plt.plot(dates,list_number_of_stocks_advancing_5p, label = "5% Advancing") 
-    plt.plot(dates,list_number_of_stocks_declining_5p, label = "5% Declining")
+    plt.plot(dates,list_number_of_stocks_advancing_percentage, label = "{} Advancing".format(percentage)) 
+    plt.plot(dates,list_number_of_stocks_declining_percentage, label = "{} Declining".format(percentage))
     plt.legend()
     
     # function to show the plot 
